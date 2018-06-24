@@ -11,3 +11,4 @@
 (sum_square_max 4 2 1)
 (sum_square_max 2 4 1)
 (sum_square_max 1 4 2)
+(sum_square_max 0 2 2)
