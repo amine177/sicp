@@ -1,14 +1,14 @@
-(define (sum_square_max a b c)
-  (if  (> a b)
-       (if (> b c)
-           (+ (* a a) (* b b))
-           (+ (* a a) (* c c)))
-       (if (> a c)
-           (+ (* b b) (* a a))
-           (+ (* b b) (* c c))))
-  )
+(define (square a)
+  (* a a))
 
-(sum_square_max 4 2 1)
-(sum_square_max 2 4 1)
-(sum_square_max 1 4 2)
-(sum_square_max 0 2 2)
+(define (diagonal a b c)
+  (cond
+    ((and (> a b) (> b c))
+             (+ (square a) (square b)))
+    ((and (> b a) (> c a))
+             (+ (square b) (square c)))
+    (else
+      (+ (square  c) (square a)))))
+
+(diagonal 5 3 1)
+
