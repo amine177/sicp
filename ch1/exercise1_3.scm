@@ -3,7 +3,7 @@
 
 (define (diagonal a b c)
   (cond
-    ((and (> a b) (> b c))
+    ((and (> a c) (> b c))
              (+ (square a) (square b)))
     ((and (> b a) (> c a))
              (+ (square b) (square c)))
