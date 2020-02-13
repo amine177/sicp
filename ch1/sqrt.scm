@@ -1,21 +1,23 @@
-(define (improve guess x)
-  (average guess (/ x guess)))
+(define (refine lower upper)
+  (/ (+ lower (/ upper lower)) 2)) ; newton's method x_n+1 = x_n - f(x_n) / f'(x_n)
 
-(define (average x y)
-  (/ (+ x y) 2))
+(define epsilon 0.00001) ; approximation value
 
-(define (epsilon ) 0.000000001)
+(define (square a) (* a a))
 
-(define (good-enough? guess x)
-  (< (abs (- (square guess) x)) (epsilon)))
+(define (abs a)
+  (if (< a 0) (- a)
+      a))
 
-(define (sqrt-iter guess x)
-  (if (good-enough? guess x)
-      guess
-      (sqrt-iter (improve guess x)
-                 x)))
+(define (good y x)
+  (if (< (abs (- x (square y))) epsilon) true
+      false))
+
+(define (sqrt-next x_n x)
+  (if (good x_n x) ; predicate
+      x_n          ; consequent
+      (sqrt-next (refine x_n x) x)))
 
 
 
-(sqrt-iter 1.0 9)
-(sqrt-iter 1.0 2)
+      
