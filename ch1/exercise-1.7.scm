@@ -10,6 +10,9 @@
 	(/ (+ lower (/ upper lower)) 2.0)) ; newton's method x_n+1 = x_n - f(x_n) / f'(x_n)
 
 (define (refine-epsilon epsilon x)
+  (display "epsilon: ")
+  (display epsilon)
+  (display "\n")
   (if (<= x epsilon) (refine-epsilon (/ epsilon 10) x)
       epsilon))
 
@@ -19,19 +22,19 @@
       a))
 
 (define (good y prev approx)
-  (if (< (abs (- y prev)) (* y approx)) true
+  (if (< (abs (- y prev)) approx) true
       false))
 
 (define (sqrt-next x_n prev x approx)
-  (if (good x_n prev (refine-epsilon approx x)) ; predicate
+  (if (good x_n prev approx) ; predicate
       x_n          ; consequent
-      (sqrt-next (refine x_n x) x_n x (refine-epsilon approx x))))
+      (sqrt-next (refine x_n x) x_n x approx)))
 
 (define x_0 1)
 
 (define (sqrt x approx)
   (if (= x 0) 0
-  (sqrt-next x_0 0 x approx)))
+  (sqrt-next x_0 0 x (refine-epsilon approx x))))
 
 (define epsilon 0.00001) ; approximation value
 (sqrt 2 epsilon)
