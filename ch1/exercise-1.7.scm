@@ -7,7 +7,7 @@
 ;against the previous guess and if guess doesn't change less than a treshold halt
 
 (define (refine lower upper)
-	(/ (+ lower (/ upper lower)) 2.0))				; newton's method x_n+1 = x_n - f(x_n) / f'(x_n)
+	(/ (+ lower (/ upper lower)) 2.0)) ; newton's method x_n+1 = x_n - f(x_n) / f'(x_n)
 
 (define (refine-epsilon epsilon x)
   (if (<= x epsilon) (refine-epsilon (/ epsilon 10) x)
