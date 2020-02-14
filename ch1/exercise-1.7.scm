@@ -1,8 +1,11 @@
-					; when x is too small it will fall under the error margin, so
-					; the execution will stop from the first iteration
-					; when x is too big, the difference between x and the guess will be always bigger then the error margin, therefore (good ) will always return false -> infinite loop
-					; the solution for the small x is to make epsilon small enough
-; the solution for the big x is always compare a current guess against the previous guess and if guess doesn't change less than a treshold halt
+; when x is too small it will fall under the error margin, so
+; the execution will stop from the first iteration
+; when x is too big, the difference between x and the guess will be always bigger
+; then the error margin, therefore (good ) will always return false -> infinite loop
+; the solution for the small x is to make epsilon small enough
+; the solution for the big x is always compare a current guess
+;against the previous guess and if guess doesn't change less than a treshold halt
+
 (define (refine lower upper)
 	(/ (+ lower (/ upper lower)) 2.0))				; newton's method x_n+1 = x_n - f(x_n) / f'(x_n)
 
