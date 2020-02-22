@@ -1,0 +1,24 @@
+\documentclass{article}
+\usepackage{amssymb}
+\begin{document}
+\noindent In order to prove that $Fib(n)$ is the closest integer
+to $\frac{\phi^n}{\sqrt{5}}, \phi = \frac{1+\sqrt{5}}{2}$\\
+We need to prove that $ |Fib(n) -  \frac{\phi^n}{\sqrt{5}}| \leq 1$\\
+
+\noindent Let $\psi = \frac{( 1 - \sqrt{5})}{2}$ , lets prove by induction that
+$Fib(n) = \frac{\phi^n - \psi^n}{\sqrt{5}}$\\
+Let $H(n) : Fib(n) = \frac{\phi^n - \psi^n}{\sqrt{5}}$\\
+$Fib(0) = 0 = \frac{\phi^0 - \psi^0}{\sqrt{5}}$ : $H(0)$ is true.\\
+Suppose that $H(n)$ is true, lets prove that $H(n+1)$ is true.\\
+$\Rightarrow Fib(n+1) = \frac{\phi^n - \psi^n}{\sqrt{5}}
++ \frac{\phi^{n-1} - \psi^{n-1}}{\sqrt{5}}$\\
+$\Rightarrow Fib(n+1) = \frac{\phi^{n-1}(\phi + 1) - \psi^{n-1}(\psi + 1)}{\sqrt{5}}$\\
+Having $\phi^2 = \phi + 1$ and $\psi^2 = \psi + 1$\\
+$\Rightarrow Fib(n+1) = \frac{\phi^{(n+1)} - \psi^{(n+1)}}{\sqrt{5}}$\\
+$\Rightarrow H(n+1)$ is true\ $\blacksquare$\\
+
+\noindent Let $Fib(n) = \frac{\phi^n - \psi^n}{\sqrt{5}}$\\
+$\Rightarrow |Fib(n) - \frac{\phi^n}{\sqrt{5}}| = |\frac{\psi^n}{\sqrt{5}}|$ \\
+Having $\sqrt{5} < 3 \Rightarrow |\psi^n| < 1$ and $ \sqrt{5} > 1$\\
+$\Rightarrow |Fib(n) -  \frac{\phi^n}{\sqrt{5}}| \leq 1 \ \blacksquare$
+\end{document}
