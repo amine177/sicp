@@ -1,0 +1,23 @@
+\documentclass{article}
+\usepackage{amsmath}
+\begin{document}
+\noindent Let $q = 1, p = 0$ and
+$
+T_{pq}^n:
+\begin{cases}
+  a_n = b_{n-1}q + a_{n-1}q + a_{n-1}p\\
+  b_n = b_{n-1}p + a_{n-1}q
+\end{cases}$\\
+  
+$\Rightarrow
+T_{pq}^{n+1} :
+\begin{cases}
+  a_{n+1} = b_{n-1} (2pq + q^2) + a_{n-1} (q^2 + 2pq)
+  + a_{n-1} (p^2 + q^2)\\
+  b_{n+1} = b_{n-1}(p^2+q^2) + a_{n-1} (2pq + q^2)
+  \end{cases}
+  $\\
+  Let $q' = 2pq + q^2 $ and $p' = p^2 + q^2$\\
+  $\Rightarrow T_{pq}^n = (T_{p'q'}^{\frac{n}{2}})$
+ 
+\end{document}
