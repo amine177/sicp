@@ -1,12 +1,25 @@
-(define (p) (p))
-(define (test x y)
-  (if (= x 0)
+(define (f x)
+  x)
+
+(define (g f x)
+  (if (> x 0)
       0
-      y))
+      (f x)))
 
-(test 0 (p))
+(g f (+ 3 1))				; If the interpreter uses normal order evaluation
+					; the function is evaluated before the arguments
+					; then this function call will return 4.
+					; If your interpreter uses applicative order evaluation
+					; the function is evaluated after the arguments
+					; then the function call will return 0
 
-; in an applicative-order evaluation the interpreter
-; will evaluate p, and enter in an infinite recursive
-; call on the other hand in a normal-order evaluation
-; the interpreter will not evaluate p and halt
+
+(define (identity)  (identity))
+(define (left-or-right left right)
+  (if (= left 0) 0 right))
+(left-or-right 0 (identity))		; If the interpreter uses normal order evaluation
+					; the function is evaluated before the arguments
+					; then this function call will return right
+					; If your interpreter uses applicative order evalution
+					; the function is evaluated after the arguments
+					; then the function call will return 0
