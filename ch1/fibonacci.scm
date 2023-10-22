@@ -17,3 +17,17 @@
 (fib 1)
 (fib 2)
 (fib-t 0)
+
+
+(define (fib_it n)
+  (fib_iter 0 1  n))
+
+(define (fib_iter  u_n u_next counter)
+  (if (= counter 0) u_n
+      (fib_iter u_next (+ u_n u_next)  (- counter 1)))) ; this should
+					; be more succint than the
+					; book. It makes it clear
+					; that the U_N = U_Next
+					; and U_next = U_N + U_next
+(fib_it 6)
+(fib 6)
