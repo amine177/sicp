@@ -30,3 +30,19 @@
 (f-it 3)
 (f-it 4)
 
+
+(define (f_iter_internal  n a b c counter)
+    (if (= counter (- n 2))
+	a
+	(if (< n 3)
+	    n
+	    (f_iter_internal
+	       n
+	       (+ a (* 2 b) (* 3 c))
+	       a
+	       b
+	       (+ counter 1)))))
+(define (f_iter x)
+  (f_iter_internal x 2 1 0 0))
+
+(f_iter 9)
