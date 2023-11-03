@@ -1,10 +1,13 @@
 (define (even x)
   (= (bitwise-and x 1) 0))
 
+(define (square x)
+  (* x x))
+
 (define (e-m a pwr n)
   (cond
    ((= pwr 0) 1)
-   ((even pwr) (remainder (e-m (* a a) (/ pwr 2) n) n))
+   ((even pwr) (remainder (square (e-m a (/ pwr 2) n)) n))
    (else (remainder (* a (e-m a (- pwr 1) n)) n))))
 
 
