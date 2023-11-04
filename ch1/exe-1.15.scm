@@ -7,5 +7,6 @@
 
 
 
-; x / 3^n = 10^-1 => n = Floor((log(x) + log(10))/log(3))+ 1 , for x = 12, n = 5
+; x / 3^n = 10^-1 => n = Floor((log(x) + log(10))/log(3))+ 1 ,
+; for x = 12, n = 5
 ; O(log(x)) for both space and time
