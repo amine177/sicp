@@ -3,24 +3,15 @@
 (define (square x)
   (* x x))
 
-(define (e-m a pwr n)
-  (cond
-   ((= pwr 0) 1)
-   ((even pwr) (remainder (square (e-m a (/ pwr 2) n)) n))
-   (else (remainder (* a (e-m a (- pwr 1) n)) n))))
-
-
-(define (fermat-test n a  treshold)
-  (cond
-   ((= treshold 0) true)
-   ((= (e-m a n n) a) (fermat-test n (+ 1  (random (- n 1)))
-				   (- treshold 1)))
-   (else false)))
+(define (smallest-divisor n)
+  (find-divisor n 2))
+(define (find-divisor n d)
+  (cond ((> (square d) n) n)
+	((= (remainder n d) 0) d)
+	(else (find-divisor n (+ d 1)))))
 
 (define (prime? n)
-  (cond ((= n 2) true)
-	(else
-  (fermat-test n 2 1000))))
+  (= (smallest-divisor n) n))
 
 (define (timed-prime-test n)
   (start-prime-test n (runtime)))
@@ -85,10 +76,3 @@
 ;; 100000007 *** .03000000000000025
 ;; 100000037 *** 2.9999999999999805e-2
 ;; 100000039 *** .03000000000000025
-
-
-(find-smallest-three-primes 0 (square (square 1000000001))
-			    (square (square 10000000000)))
-;; 1000000004000000006000000004000000007 *** .17999999999999972
-;; 1000000004000000006000000004000000251 *** .17999999999999972
-;; 1000000004000000006000000004000000341 *** .16999999999999993
