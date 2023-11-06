@@ -3,6 +3,11 @@
       1
       (* (f a) (product f (next a) b next))))
 
+(define (product-iterative f a b next total)
+  (if (> a b)
+      total
+      (product-iterative f (next a) b next (* total (f a)))))
+
 (define (factorial n)
   (define (next x)
     (+ x 1))
@@ -21,4 +26,13 @@
   (* 2 (product fraction 2.0 n next)))
 
 
-(pi 10000.0)
+(define (pi-iter n)
+  (define (fraction p)
+    (* (/ p (- p 1)) (/ p (+ p 1))))
+    (define (next x)
+      (+ x 2))
+    (* 2 (product-iterative fraction 2.0 n next 1)))
+
+
+(pi 12.0)
+(pi-iter 10.0)
