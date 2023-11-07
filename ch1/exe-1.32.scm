@@ -17,12 +17,40 @@
        b
        (combiner (term a) accumulator))))
 
+(define (accumulate-iter2 combiner term a next b accumulator)
+  ; iter	
+  (define (iter a b accumulator)
+    (if (> a b)
+	accumulator
+    (iter (next a) b (combiner (term a) accumulator))))
+  (iter a b accumulator))
 
 (define (factorial n)
   (define (identity x)
     x)
   (define (next x)
     (+ x 1))
+  ; *: combiner, identity: term, next: next
   (accumulate * 1 identity 1 next n))
 
+(define (factorial-iter n)
+  ; term
+  (define (identity x)
+    x)
+  ; next
+  (define (next x)
+    (+ x 1))
+  (accumulate-iter * identity 1 next n 1))
+
+(define (factorial-iter2 n)
+  ; term
+  (define (identity x) 
+    x)
+  ; next
+  (define (next x)
+    (+ x 1))
+  (accumulate-iter2 * identity 1 next n 1))
+
 (factorial 5)
+(factorial-iter 5)
+(factorial-iter2 5)

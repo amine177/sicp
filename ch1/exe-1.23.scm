@@ -5,15 +5,10 @@
 
 (define (smallest-divisor n)
   (find-divisor n 2))
-
-(define (next d)
-  (cond ((= d 2) 3)
-	(else (+ d 2))))
-  
 (define (find-divisor n d)
   (cond ((> (square d) n) n)
 	((= (remainder n d) 0) d)
-	(else (find-divisor n (next d )))))
+	(else (find-divisor n (+ d 1)))))
 
 (define (prime? n)
   (= (smallest-divisor n) n))
