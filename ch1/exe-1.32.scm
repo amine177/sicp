@@ -54,3 +54,5 @@
 (factorial 5)
 (factorial-iter 5)
 (factorial-iter2 5)
+
+(disassemble factorial)
