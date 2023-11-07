@@ -11,7 +11,7 @@
 	(else (* a (exponant a (- n 1))))))
 	
 (define (fermat-test n)
-  (= (exponant-modulus (random (- n 1)) (- n 1) n) 
+  (= (exponant-modulus (+ 1 (random (- n 1))) (- n 1) n) 
      1))
 
 (define (square-mod-miller-check x n)
@@ -22,6 +22,7 @@
 	 (else (remainder (square x) n))))
 
 (define (exponant-modulus x k n) ; x^k mod n = x^(k/2)^2mod n
+
   (cond ((= k 0) 1)
 	((even? k)
 	 (square-mod-miller-check (exponant-modulus x (/ k 2) n) n))
