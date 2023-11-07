@@ -16,3 +16,13 @@
        next
        b
        (combiner (term a) accumulator))))
+
+
+(define (factorial n)
+  (define (identity x)
+    x)
+  (define (next x)
+    (+ x 1))
+  (accumulate * 1 identity 1 next n))
+
+(factorial 5)
