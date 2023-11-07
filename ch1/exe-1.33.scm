@@ -50,6 +50,27 @@
     (+ x 1))
   (define (term x)
     (square x))
- (accumulate + term next 0 prime? a b))
+  (accumulate + term next 0 prime? a b))
+
+(define (gcd a b)
+  (if (= b 0)
+      a
+      (gcd b (remainder a b))))
+
+(define (product-positive-relative-prime n)
+  (define (next x)
+    (+ x 1))
+  (define (term x)
+    x)
+  (define (less-relative-prime-n x)
+    (and (= (gcd x n) 1) (< x n)))
+  (accumulate *
+	      term
+	      next
+	      1
+	      less-relative-prime-n
+	      1
+	      n))
 
 (sum-square-prime 1 5)
+(product-positive-relative-prime 6)
