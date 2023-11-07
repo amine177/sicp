@@ -22,27 +22,37 @@
 		 b)))))
 
 
-(define (square x)
+ (define (square x)
   (* x x))
 
 (define (even? x)
   (= (bitwise-and x 1) 0))
 
-(define (even x)
-  (= (bitwise-and x 1) 0))
-(define (square x)
-  (* x x))
+(define (exponant a n)
+  (cond ((= n 0) 1)
+	((even? n)
+	 (square (exponant a (/ n 2))))
+	(else (* a (exponant a (- n 1))))))
+	
+(define (fermat-test n)
+  (if (= n 1) true
+  (= (exponant-modulus (+ 1 (random (- n 1))) (- n 1) n) 
+     1)))
 
-(define (smallest-divisor n)
-  (find-divisor n 2))
+(define (square-mod-miller-check x n)
+  (cond ((and
+	  (= (remainder (square x) n) 1)
+	  (not (= x 1))
+	  (not (= x (- n 1))) 0))
+	 (else (remainder (square x) n))))
 
-(define (find-divisor n d)
-  (cond ((> (square d) n) n)
-	((= (remainder n d) 0) d)
-	(else (find-divisor n (+ d 1)))))
+(define (exponant-modulus x k n) ; x^k mod n = x^(k/2)^2mod n
 
-(define (prime? n)
-  (= (smallest-divisor n) n))
+  (cond ((= k 0) 1)
+	((even? k)
+	 (square-mod-miller-check (exponant-modulus x (/ k 2) n) n))
+	(else
+	 (remainder (* x (exponant-modulus x (- k 1) n)) n))))
 
 
 (define (sum-square-prime a b)
@@ -50,7 +60,7 @@
     (+ x 1))
   (define (term x)
     (square x))
-  (accumulate + term next 0 prime? a b))
+  (accumulate + term next 0 fermat-test a b))
 
 (define (gcd a b)
   (if (= b 0)
