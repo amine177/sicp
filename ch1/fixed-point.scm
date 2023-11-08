@@ -7,3 +7,6 @@
 
 
 (fixed-point cos 1.0 0.00000001)
+(define (sqrt x)
+  (fixed-point (lambda (y) (* 0.5 (+  y (/ x y)))) 1.0 0.000001))
+(sqrt 2)
