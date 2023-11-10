@@ -5,4 +5,7 @@
 *.scm~
 *.scm#*
 .#*.scm
+*.aux
+*.log
+*region_.texn
 *~
