@@ -7,7 +7,8 @@
 
 (define (golden-ratio x epsilon)
   (fixed-point
-	 (lambda (x) (+ 1 (/ 1 x)))
+;   (lambda (x) (+ 1 (/ 1 x)))
+   (lambda (y) (* 0.5 (+ y (+ 1 (/ 1 y))))) ; with dampening
 	 x
 	 epsilon))
 
