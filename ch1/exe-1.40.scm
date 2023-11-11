@@ -17,7 +17,8 @@
 
 (define (newton-method g initial-guess)
   (fixed-point
-   (lambda (x) (- x (/ (g x) ((deriv g) x)))) initial-guess 0.0001))
+   (lambda (x) (- x (/ (g x) ((deriv g) x)))) initial-guess 0.0001)) ; find x such as g(x) = 0 therefore
+; (lambda(x) ... ) = x : a fixed point of the lambda expression in sense
 
 
 (define (sqrt x)
