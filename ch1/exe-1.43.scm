@@ -2,10 +2,12 @@
   (lambda (x) (f (g x))))
 
 (define (repeated f n)
-  (cond ((< n 2)
-      f)
-      (else
-       (repeated (compose f f ) (- n 1)))))
+  (define (iter comp k)
+       (cond ((< k 2)
+	      comp)
+	     (else
+	      (iter (compose f comp ) (- k 1)))))
+  (iter f n))
 
 (define (square x)
   (* x x))
