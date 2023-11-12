@@ -20,7 +20,7 @@
 (define (average x y)
   (/ (+ x y) 2.0))
 
-(define (average-dump f)
+(define (average-damp f)
   (lambda (x) (average x (f x))))
 
 (define (fast-exp b n)
@@ -34,7 +34,8 @@
 
 (define (n-th-squre  x n)
   (fixed-point
-   (repeat
-     (average-dump (lambda (y) (/ x (fast-exp y (- n 1)))))
-     (- n 1))
+   ((repeat
+     average-damp
+     (+ (floor (log n)) 1));damp by a factor k of 2^k = n 
+    (lambda (y) (/ x (fast-exp y (- n 1)))))
    1.0)) ; initial guess 1.0
