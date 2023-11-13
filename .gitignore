@@ -7,5 +7,5 @@
 .#*.scm
 *.aux
 *.log
-*region_.texn
+*region_.tex
 *~
