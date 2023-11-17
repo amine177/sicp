@@ -1,7 +1,7 @@
 *.ss~
 *.ss#*
 .#*.ss
-
+*scheme*
 *.scm~
 *.scm#*
 .#*.scm
