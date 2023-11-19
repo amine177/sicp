@@ -11,7 +11,7 @@
 		   (max ll lu ul uu))))
 (define (>0? x)
   (> x 0))
-
+; the possibilities of the different signs is 2^(2-1) * 2^(2-1)
 (define (mul-interval-sign x y)
   (let ((xl (lower-bound x))
 	(xu (upper-bound x))
