@@ -1,0 +1,44 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{listings}
+\begin{document}
+\noindent Let $ (R_1,R_2) \in \mathbb{R^2} $ two resistance values of two resistor $r_1$ and $r_2$. Let $ (\epsilon_1,\epsilon2) \in \mathbb{R^2} $ their tolerance values.\\
+If $r_1$ and $r_2$ are in parallel: \\
+- The first algebraic relation is: $ R_{par} = \frac{R_1*R_2}{R_1 + R_2} $\\
+$\implies \epsilon_{par} =  \frac{(R_1+\epsilon_1)(R_2+\epsilon_2)}{(R_1 + R_2) + (\epsilon_1 + \epsilon_2)} -  \frac{R_1*R_2}{R_1 + R_2} $\\
+- The second algebraic relation is: $R_{par} = \frac{1}{\frac{1}{R_1} + \frac{1}{R_2}} $\\
+$\implies \epsilon_{par} =  \frac{1}{\frac{1}{R_1+\epsilon_1} + \frac{1}{R_2+\epsilon_2}} - \frac{1}{\frac{1}{R_1} + \frac{1}{R_2}}$\\
+Given the two scheme functions $par1$ and $par2$ :\\
+\begin{lstlisting}
+  (define (div-interval x y)
+     (cond ((= (width y) 0)
+             (error "can't divide by an interval of width 0")))
+; the old  implementation inverts lower and upper bound
+;          (mul-interval x
+;	          (make-interval (/ 1.0 (upper-bound y))
+;	           		 (/ 1.0 (lower-bound y)))))
+      (make-interval (/ (lower-bound x) (lower-bound y))
+                     (/ (upper-bound x) (upper-bound y))))
+  
+  (define (par1 r1 r2)
+     (div-interval (mul-interval r1 r2)
+                   (add-interval r1 r2)))
+
+  (define (par2 r1 r2)
+     (let ((unit (make-interval 1.0 1.0)))
+        (div-interval unit
+		      (add-interval (div-interval unit r1)
+				    (div-interval unit r2)))))
+\end{lstlisting}
+
+
+\noindent The algebraic relations both give the same error. Our calculations in \texttt{par1} and \texttt{par2} break from the algebraic notions  of an interval as we will show.\\
+Lets try to write the \texttt{lower-bound} and \texttt{upper-bound} in terms of the two forms of a parallel resistance (or how \texttt{par1} and \texttt{par2} calculate them).\\ \\
+Let $u_{r} , l_{r}$ respectively be the upper and lower bounds of an interval $r$ and let $U_{r_1.r_2}$  be the upper bound for $R1.R2$ and let $L_{r_1.r_2}$ be the lower bound of $R1 . R2;$\\
+\noindent$l_{par1} =  \frac{L_{r_1r_2}}{U_{r_1+ r_1}} < \frac{u_{r1}u_{r_2}}{U_{r_1+r_2}} $\\
+\noindent$ l_{par2} = \frac{1}{\frac{1}{u_{r_1}} + \frac{1}{u_{r_2}}} > l_{par1} $\\
+By symmetry of the proof, this can be also proven that $u_{par1} > u_{par2}$\\
+$\implies \forall (r1,r2) \in \mathbb{N^2}, e_{par1} > e_{par_2} | e_{par1} = r1*r2 - l_{par1} = u_{par1} - r1*r2 $ AND $ e_{par2} = r1*r2 - l_{par2} = u_{par2} - r1*r2 $
+
+\end{document} 
