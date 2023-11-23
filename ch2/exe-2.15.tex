@@ -39,6 +39,7 @@ Let $u_{r} , l_{r}$ respectively be the upper and lower bounds of an interval $r
 \noindent$l_{par1} =  \frac{L_{r_1r_2}}{U_{r_1+ r_1}} < \frac{u_{r1}u_{r_2}}{U_{r_1+r_2}} $\\
 \noindent$ l_{par2} = \frac{1}{\frac{1}{u_{r_1}} + \frac{1}{u_{r_2}}} > l_{par1} $\\
 By symmetry of the proof, this can be also proven that $u_{par1} > u_{par2}$\\
-$\implies \forall (r1,r2) \in \mathbb{N^2}, e_{par1} > e_{par_2} | e_{par1} = r1*r2 - l_{par1} = u_{par1} - r1*r2 $ AND $ e_{par2} = r1*r2 - l_{par2} = u_{par2} - r1*r2 $
+$\implies \forall (r1,r2) \in \mathbb{N^2}, e_{par1} > e_{par_2} | e_{par1} = r1*r2 - l_{par1} = u_{par1} - r1*r2 $ AND $ e_{par2} = r1*r2 - l_{par2} = u_{par2} - r1*r2 $\\
+\noindent The par2 procedure is more suitable for parallel resistances calculation because the division by the unit (1/r1 and 1/r2) doesn't create an expansion of the result unreasonable. While the multiplication of $R1*R2$ has that effect. In a sense par2 doesn't make the operation depend on an expansive multiplication of R1 and R2. It seems this is inherit to arithmetic operations over intervals, it is not trivial to define an exact arithmetic of intervals. 
 
 \end{document} 
