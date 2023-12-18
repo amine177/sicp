@@ -5,7 +5,7 @@
 ; a minimum or a maximum not at the extremeties
 ; of the intervals but within them.
 ; Finding those minimums and maximums
-; can be done throught a variation of gradient
+; can be done with a variation of gradient
 ; descent and other numerical methods.
 ; This task is not trivial given the limited
 ; tools we have been given by the previous chapters.
