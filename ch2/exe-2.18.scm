@@ -1,0 +1,6 @@
+(define (reverse lst)
+  (if (= (length lst) 1)
+      (list (car lst))
+      (append (reverse (cdr lst)) (list (car lst)))))
+(list 1 2 3 4 5)
+(append (reverse (list 1 2 3 4 5)) (list 1 2 3 4 5))
