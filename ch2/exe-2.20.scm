@@ -1,5 +1,5 @@
 (define (same-parity . args)
-  (define (recurse rslt e . va)
+  (define (iter rslt e . va)
     (let ((varargs (car va)))
       (cond ((null? varargs)
 	   rslt)
@@ -7,9 +7,9 @@
 	   (if (=
 		(bitwise-and e 1)
 		(bitwise-and (car varargs) 1))
-	       (recurse
+	       (iter
 		(append rslt (list (car varargs)))
 		e
 		(cdr varargs))
-	       (recurse rslt e (cdr varargs)))))))
-  (recurse (list (car args)) (car args) (cdr args)))
+	       (iter rslt e (cdr varargs)))))))
+  (iter (list (car args)) (car args) (cdr args)))
