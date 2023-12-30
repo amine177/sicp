@@ -1,8 +1,9 @@
 (define (deep-reverse lst)
   (cond ((null? lst) '())
-	((not (pair? lst)) (list lst))
-	((= (length lst) 1) lst)
+	((not (pair? (car lst)))
+	 (append (deep-reverse (cdr lst))
+		 (list (car lst))))
 	(else
 	 (append (deep-reverse (cdr lst))
-		(deep-reverse (list (car lst)))))))
-(deep-reverse (list 3 3 4))
+		(list (deep-reverse (car lst))))))))
+(deep-reverse (list 3 (list 1 (list 5 6) 3) 4))
