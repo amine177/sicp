@@ -1,0 +1,11 @@
+(define (filter predicate obj)
+    (cond ((null? obj) '())
+	  ((predicate (car obj))
+	   (cons (car obj)
+		 (filter predicate (cdr obj))))
+	  (else (filter predicate (cdr obj)))))
+
+(define (accumulate fn neutral obj)
+  (cond ((null? obj) neutral)
+	(else (fn (car obj)
+		  (accumulate fn neutral (cdr obj))))))
