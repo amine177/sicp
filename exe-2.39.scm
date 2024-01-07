@@ -1,8 +1,13 @@
+(define (append-l a b)
+  (if (null? a)
+      b
+      (cons (car a) (append (cdr a) b))))
+
 (define (reverse-r sequence)
   (fold-right (lambda (x y)
 		(if (null? y)
-		    (cons x '())
-		    (cons y x)))
+		    (cons x y)
+		    (append-l y (cons  x '()))))
 	      '()
 	      sequence))
 
