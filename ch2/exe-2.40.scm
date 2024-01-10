@@ -23,3 +23,5 @@
        (filter (lambda (pair)
 		      (prime? (+ (car pair) (cdr pair))))
 	       (unique-pairs (- n 1)))))
+
+(prime-sum-pairs 7)
