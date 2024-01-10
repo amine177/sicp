@@ -1,0 +1,17 @@
+(define (enumerate-interval start end)
+  (if (> start end)
+      '()
+      (cons start (enumerate-interval (+ start 1) end))))
+
+
+(define (triplets-sum s n)
+  (filter (lambda (triplet)
+	    (= (reduce + 0 triplet) s))
+  (reduce append '()
+	  (reduce append '()
+		  (map (lambda (i)
+			 (map (lambda (j)
+				(map (lambda (k) (list i j k))
+				     (enumerate-interval 1 (- j 1))))
+			      (enumerate-interval 1 (- i 1))))
+		       (enumerate-interval 1 n))))))
