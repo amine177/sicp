@@ -1,0 +1,11 @@
+(define (remove s x)
+  (filter (lambda (y)
+	    (not (= x y))) s))
+(define (permutations s)
+  (if (null? s)
+      (list '())
+  (reduce append '() (map (lambda (x)
+			    (map (lambda (p) (cons x p))
+				 (permutations (remove s x))))
+			  s))))
+  
