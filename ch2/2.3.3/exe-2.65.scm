@@ -9,6 +9,18 @@
 			     result-list)))))
   (copy-to-list tree '()))
 
+(define (flatmap fn sequence)
+  (reduce append '() (map fn sequence)))
+
+(define (tree->list-map tree)
+  (cond
+   ((null? tree) '())
+   ((not (pair? tree)) (list tree))
+   (else
+    (reverse (reduce append '() (map (lambda (x)
+	   (tree->list-map x)) tree))))))
+	       
+
 (define (list->tree elements)
   (car (partial-tree elements (length elements))))
 
