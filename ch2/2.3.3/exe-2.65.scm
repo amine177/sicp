@@ -17,8 +17,8 @@
    ((null? tree) '())
    ((not (pair? tree)) (list tree))
    (else
-    (reverse (reduce append '() (map (lambda (x)
-	   (tree->list-map x)) tree))))))
+    (flatmap (map (lambda (x)
+	   (tree->list-map x)) tree)))))
 	       
 
 (define (list->tree elements)
