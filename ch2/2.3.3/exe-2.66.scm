@@ -8,3 +8,5 @@
 	 (lookup record-key (left-branch db)))
 	(else
 	 (lookup record-key (right-branch db)))))
+
+(lookup 1 '(1 (2 () ()) (3 () ())))
