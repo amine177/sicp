@@ -1,0 +1,5 @@
+(define (lookup lookup-key db)
+  (cond ((null? db) #f)
+	((equal? lookup-key (key (car db)))
+	 (car db))
+	(else (lookup lookup-key (cdr db)))))
