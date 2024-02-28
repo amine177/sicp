@@ -114,9 +114,11 @@
 	(else
 	 (let ((left (car symbols))
 	       (right (cadr symbols)))
-
-	   (make-code-tree (make-code-tree left right)
-		 (successive-merge (cddr symbols)))))))
+	   (if (null? (cddr symbols))
+	       (make-code-tree left right)
+	       (make-code-tree (make-code-tree left right)
+			       (successive-merge
+				(cddr symbols))))))))
 
 (define (generate-huffman-tree-iter symbols)
   (successive-merge-iter (pairs->leaves symbols)))
