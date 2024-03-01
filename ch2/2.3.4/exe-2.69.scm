@@ -107,37 +107,20 @@
   (successive-merge (pairs->leaves symbols)))
 
 (define (successive-merge symbols)
-  (display "\nsymbols: ")
-  (display symbols)
   (cond ((null? symbols) '())
-	((null? (cdr symbols)) (car symbols))
+	((null? (cdr symbols)) '())
 	(else
 	 (let ((left (car symbols))
 	       (right (cadr symbols)))
 	   (if (null? (cddr symbols))
 	       (make-code-tree left right)
-	       (make-code-tree (make-code-tree left right)
-			       (successive-merge (cddr symbols))))))))
+	       (successive-merge
+		(adjoin-set
+		 (make-code-tree left
+				 right)
+		 (cddr symbols))))))))
 
-(define (generate-huffman-tree-iter symbols)
-  (successive-merge-iter (pairs->leaves symbols)))
 
-(define (successive-merge-iter symbols)
-  (define (iter result symbols)
-    (cond ((null? symbols) result)
-	  ((not (pair? (cdr symbols))) (make-code-tree result
-						      (car symbols)))
-	(else
-	 (let ((left (car symbols))
-	       (right (cadr symbols)))
-	   (if (null? result)
-	       (iter (make-code-tree left
-				     right)
-		     (cddr symbols))
-	       (iter (make-code-tree left
-				     result)
-		     (cdr symbols)))))))
-  (iter '() symbols))
 
 (define sample-tree
   (make-code-tree (make-leaf 'A 4)
@@ -148,10 +131,4 @@
 		    (make-leaf 'C 1)))))
  
 
-(decode (encode '( A B C) (generate-huffman-tree-iter '( ( A 10) (B 1) (C 2))))  (generate-huffman-tree '( ( A 10) (B 1) (C 2))))
-
-(decode (encode '( A B C) (generate-huffman-tree '( ( A 10) (B 1) (C 2))))  (generate-huffman-tree-iter '( ( A 10) (B 1) (C 2))))
-
 (decode (encode '( A B C) (generate-huffman-tree '( ( A 10) (B 1) (C 2))))  (generate-huffman-tree '( ( A 10) (B 1) (C 2))))
-
-(decode (encode '( A B C) (generate-huffman-tree-iter '( ( A 10) (B 1) (C 2))))  (generate-huffman-tree-iter '( ( A 10) (B 1) (C 2))))
