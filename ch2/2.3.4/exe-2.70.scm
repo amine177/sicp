@@ -137,5 +137,5 @@
     (YIP 9)
     (BOOM 1))))
 
-; How many bits are required for the encoding? 136
+; How many bits are required for the encoding? 84
 ; Number of bits with a fixed length encoding : n * 36
