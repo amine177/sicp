@@ -6,11 +6,16 @@
 ; O(encode) = sum(i: 1->n, N_Si * O(log(i))) close to O(n log(n))
 ; In the case of an unblanced tree
 ; O(encode) close to O(n^2)
-; The optimal case is for any symbole Si of length li
-; to satisfy : li = -log_2(1/weight_Si)
+; The optimal case is for any symbol Si of length li
+; to satisfy : li = -log_2(weight_Si) (entropy being the lower bound
+; of a symbol length sum(p_ilog(1/p_i)) = sum(p_il_i) ,
+; l_i : length of the symbol s_i and p_i the probability of symbol
+; s_i appearing in text)
 ; then weight_Si = 1/2^i
 ; this decreasing nature of the symbol
 ; weights should be satisfied even with
 ; natural number, therfore the weights of 2, 2^2, ... , 2^n
 ; converge in their order of growth to the worst case and that is
 ; O(n^2)
+; to reach the optimal case the proabilities of symbols (or weights)
+; should follow a geometric probability distribution
