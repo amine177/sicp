@@ -4,7 +4,7 @@
 ; the encoding tree will be balanced
 ; O(encode-symbol(Si)) = O(log(i)), i number of bits of the symbol
 ; O(encode) = sum(i: 1->n, N_Si * O(log(i))) close to O(n log(n))
-; In the case of an unblanced tree
+; In the case of an unbaLanced tree
 ; O(encode) close to O(n^2)
 ; The optimal case is for any symbol Si of length li
 ; to satisfy : li = -log_2(weight_Si) (entropy being the lower bound
