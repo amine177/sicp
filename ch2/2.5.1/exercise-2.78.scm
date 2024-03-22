@@ -186,25 +186,4 @@
 (install-rational-package)
 (install-scheme-number-package)
 
-; the evaluation is as follows
-;(trace get)
-;(trace (get 'make-from-real-imag 'complex))
-;(trace magnitude-complex)
-;(trace contents)
-(trace apply-generic)
-;(trace make-complex-from-real-imag)
-;(trace apply)
 (magnitude-complex (make-complex-from-real-imag 1 2))
-
-
-; the explanation is ommiting get , type-args and contents
-; --- generic interface
-; (magnitude-complex (complex (rectangular 1 2)))  
-; --- peel off complex type, dispatch and apply
-; (apply-generic 'magnitude (complex (rectangular 1 2))) 
-; --- complex package procedure applied
-; (magnitude (rectangular 1 2))
-; --- peel off rectangular type, dispatch and apply
-; (apply-generic 'magnitude (rectangular 1 2))
-; --- rectangular package applied
-; (magnitude (1 2)) <- rectangular package
