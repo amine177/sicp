@@ -4,6 +4,18 @@
 (define (get op type)
   (hash-table/get *op-table* (list op type) #f))
 
+(define *coercion-table* (make-hash-table))
+(define (put-coercion stype
+		      dtype
+		      proc)
+  (hash-table/put! *coercion-table*
+		   (list stype
+			 dtype)
+		   proc))
+(define (get-coercion stype
+		      dtype)
+  (hash-table/get *coercion-table* (list stype dtype) #f))
+
 (define (type-arg datum)
   (cond ((pair? datum) (car datum))
 	((number? datum) 'scheme-number)
@@ -19,13 +31,28 @@
   (if (number? var)
       var
       (cons tag var)))
+
 (define (apply-generic op . args)
   (let ((type-args (map type-arg args)))
     (let ((proc (get op type-args)))
       (if proc
 	  (apply proc (map contents args))
-	  (error "No method for these types: APPLY-GENERIC"
-		 (list op type-args))))))
+	  (if (= (length args) 2)
+	      (let ((type1 (car type-args))
+		    (type2 (cadr type-args))
+		    (a1 (car args))
+		    (a2 (cadr args)))
+		(let ((t1->t2 (get-coercion type1
+					    type2))
+		      (t2->t1 (get-coercion type2 type1)))
+		  (cond (t1->t2
+			 (apply-generic op (t1->t2 a1) a2))
+			(t2->t1
+			 (apply-generic op a1 (t2->t1 a2)))
+			(else (error "No method for these type"
+				     (list op type-tags))))))
+	      (error "No method for these types: APPLY-GENERIC"
+		     (list op type-args)))))))
 ; interfaces to the packages
 (define (add x y) (apply-generic 'add x y))
 (define (sub x y) (apply-generic 'sub x y))
@@ -36,6 +63,7 @@
 (define (real-part z) (apply-generic 'real-part z))
 (define (angle z) (apply-generic 'angle z))
 (define (equ? x y) (apply-generic 'equ? x y))
+(define (=zero? x) (apply-generic '=zero? x))
 
 ; constructors
 (define (make-scheme-number n)
@@ -61,6 +89,9 @@
        (lambda (x y) (tag (/ x y))))
   (put 'make 'scheme-number (lambda (x) (tag x)))
   (put 'equ? '(scheme-number scheme-number) (lambda (x y) (eq? x y)))
+  (put-coercion 'scheme-number 'complex
+       (lambda (x) (make-complex-from-real-imag x 0)))
+  (put '=zero? '(scheme-number) (lambda (x) (= x 0)))
   'done)
 
 
@@ -92,9 +123,14 @@
   (define (equ? x y)
     (and (apply-generic 'equ? (numer x) (numer y))
 	 (apply-generic 'equ? (denom x) (denom y))))
+
+  (define (zero? x)
+    (apply-generic '=zero? (numer x)))
   
   (define (tag x) (attach-tag 'rational x))
 
+  (put '=zero? '(rational)
+       (lambda (x) (zero? x)))
   (put 'add '(rational rational)
        (lambda (x y) (tag (add-rat x y))))
   (put 'sub '(rational rational)
@@ -179,9 +215,14 @@
   (define (equ? z1 z2)
     (and (apply-generic 'equ? (real-part z1) (real-part z2))
 	 (apply-generic 'equ? (imag-part z1) (imag-part z2))))
+  (define (=zero? z)
+    (and (apply-generic '=zero? (real-part z))
+	 (apply-generic '=zero? (imag-part z))))
 
   (put 'equ? '(complex complex)
        (lambda (z1 z2) (equ? z1 z2)))
+  (put '=zero? '(complex)
+       (lambda (z) (=zero? z)))
   (put 'add '(complex complex)
        (lambda (z1 z2) (tag (add-complex z1 z2))))
   (put 'sub '(complex complex)
@@ -205,13 +246,3 @@
 (install-rational-package)
 (install-scheme-number-package)
 
-(equ?
- (make-complex-from-real-imag 1 1)
- (make-complex-from-real-imag 1 2))
-
-(equ?
- (make-complex-from-real-imag 1 1)
- (make-complex-from-real-imag 1 1))
-
-(equ? (make-rational 2 4)  (make-rational 4 8))
-(equ? (make-rational 1 1)  (make-rational 1 2))
