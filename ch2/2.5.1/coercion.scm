@@ -47,10 +47,10 @@
 		      (t2->t1 (get-coercion type2 type1)))
 		  (cond (t1->t2
 			 (apply-generic op (t1->t2 a1) a2))
-			(t2->t1
+ 			(t2->t1
 			 (apply-generic op a1 (t2->t1 a2)))
 			(else (error "No method for these type"
-				     (list op type-tags))))))
+				     (list op type-args))))))
 	      (error "No method for these types: APPLY-GENERIC"
 		     (list op type-args)))))))
 ; interfaces to the packages
@@ -246,3 +246,5 @@
 (install-rational-package)
 (install-scheme-number-package)
 
+(add 5 (make-complex-from-real-imag 1 2))
+(add 5 4)
