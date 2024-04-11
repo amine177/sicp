@@ -1,3 +1,12 @@
+;- SICP assumes you should change the type system:
+;In a sense we are expected to create a new type system
+;from scratch and not build on the previous exercises ..
+;scheme-number is already a supertype for real and rational
+;so we tried to cheat by making attach-tag create 'real as
+;a composite type.
+; In the file exercise-2.83.scm we will put the canonic solution
+; with the hierarchy being correct and no circularity exists there
+
 (define *op-table* (make-hash-table))
 (define (put op type proc)
   (hash-table/put! *op-table* (list op type) proc))
