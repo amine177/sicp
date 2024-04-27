@@ -353,7 +353,7 @@
 
 
 ; apply generic
-(define (apply-generic1 op  args)
+(define (apply-generic1 op . args)
   (let ((type-args (map type-arg args)))
 	(let ((proc (get op type-args)))
 	    (if proc
@@ -406,8 +406,8 @@
    
 (define (apply-generic op . args)
   (cond ((member op (list 'add 'mul 'div 'sub))
-	 (drop (apply-generic1 op  args)))
-	(else (apply-generic1 op  args))))
+	 (drop (apply apply-generic1 op  args)))
+	(else (apply apply-generic1 op  args))))
 
 ;(raise (make-integer 1))
 
