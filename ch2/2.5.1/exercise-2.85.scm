@@ -133,6 +133,7 @@
   (put 'add '(real real) (lambda (x y) (tag (+ x y))))
   (put 'sub '(real real) (lambda (x y) (tag (- x y))))
   (put 'div '(real real) (lambda (x y) (tag (/ x y))))
+  (put 'mul '(real real) (lambda (x y) (* x y)))
   (put
    'make-real-from-numer-denom
    'real
