@@ -24,3 +24,21 @@
 					     board-size)))))
   (queen-cols board-size))
 
+(define (enumerate-interval acc start end)
+  (if (> start end)
+      acc
+      (enumerate-interval (append acc (list start)) (+ start 1) end)))
+
+
+(define (flatmap fn sequence)
+  (reduce append '() (map fn sequence)))
+
+(define (adjoin-position row column other-positions)
+;  (display "\nadjoin : ")
+;  (display other-positions)
+;  (display " and : ")
+;  (display (list row column))
+;  (newline)
+;  (display " result : ")
+;  (display (append other-positions (list row column)))
+  (append (list (list row column)) other-positions))
