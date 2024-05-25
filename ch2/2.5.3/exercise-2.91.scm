@@ -568,7 +568,13 @@
    
 (define (apply-generic op . args)
   (cond ((member op (list 'add 'mul 'div 'sub  ))
-	 (drop (apply apply-generic1 op  args)))
+	 (let ((result (apply apply-generic1 op  args)))
+
+	   (cond ((and (pair? result)
+		       (eq? (car result) 'polynomial-fraction))
+		  result)
+		 (else (drop result)))))
+
 	(else (apply apply-generic1 op  args))))
 
 (define (install-dense-polynomial-package)
@@ -578,6 +584,7 @@
     (cons var term-list))
   (define (same-variable? v1 v2)
     (eq? v1 v2))
+;  (trace same-variable?)
   (define (variable p)
     (car p))
   (define (term-list p)
@@ -714,6 +721,7 @@
   (define (make-poly variable term-list) (cons variable term-list))
   (define (same-variable? v1 v2)
     (eq? v1 v2))
+;  (trace same-variable?)
   (define (variable p) (car p))
   (define (term-list p)
     (cdr p))
@@ -728,6 +736,55 @@
 	  (make-poly (variable p1)
 		     (mul-terms (term-list p1) (term-list p2)))
 	  (error "Polynomials not in the same variable: MUL-POLY"
+		 (list p1 p2))))
+
+    (define (div-terms l1 l2)
+      (if (empty-termlist? l1)
+	  (list (the-empty-termlist)
+		(the-empty-termlist))
+	  (let ((t1 (first-term l1))
+	       (t2 (first-term l2)))
+	      (if (> (order t2) (order t1))
+		  (list (the-empty-termlist) l1)
+		  (let ((new-c (div (coeff t1) (coeff t2)))
+			(new-o (- (order t1) (order t2))))
+
+		    (let ((rest-of-result
+			   (div-terms
+			    (add-terms
+			    l1
+			    (map (lambda (t)
+				    (neg-term t))
+				 (mul-term-by-all-terms
+				  (make-term new-o
+					     new-c)
+				  l2))
+			    
+			    ) l2)))
+
+		      
+		      (list (adjoin-term (make-term
+					  new-o
+					  new-c)
+					 (car rest-of-result))
+			    (cadr rest-of-result))))))))
+
+;    (bkpt div-terms)
+;    (trace div-terms)
+    (define (div-poly p1 p2)
+
+      (if (same-variable? (variable p1) (variable p2))
+	  (let ((result
+		 (map (lambda (t)
+			(cond ((null? t)
+			       (make-poly (variable p1) (list (list 0 0))))
+			      (else
+			       (make-poly (variable p1) t))))
+	       (div-terms (term-list p1) (term-list p2)))))
+
+		 (cons 'polynomial-fraction
+		      (list (car result) (cadr result))))
+	  (error "Polynomials not in the same variable: DIV-POLY"
 		 (list p1 p2))))
 
     (define (terms-equal? t1 t2)
@@ -753,13 +810,17 @@
 	 (term-list p))) 0))
 
     (define (neg-term t)
+
       (list (order t)
 	    (apply-generic 'neg (coeff t))))
+;    (trace neg-term)
     (define (neg p)
       (make-poly (variable p)
 		 (map  (lambda (t)
 			 (neg-term t))
 		       (term-list p))))
+
+      
 
     ;; interface
     (put 'neg '(sparse-polynomial)
@@ -770,7 +831,17 @@
     (put 'sub '(sparse-polynomial sparse-polynomial)
 	 (lambda (p1 p2)
 	   (tag (add-poly p1
-		     (neg p2)))))
+			  (neg p2)))))
+    (put 'div '(sparse-polynomial sparse-polynomial)
+	 (lambda (p1 p2)
+	   (let ((result
+		  (div-poly p1
+			    p2)))
+	     (let ((quotient (cadr result))
+		   (remainder (caddr result)))
+	       (cons 'polynomial-fraction
+		     (list (tag quotient)
+			   (tag remainder)))))))
     (put 'mul '(sparse-polynomial sparse-polynomial)
 	 (lambda (p1 p2) (tag (mul-poly p1 p2))))
     (put 'make 'sparse-polynomial
@@ -795,11 +866,14 @@
 	  (else
 	   (cons i (length-to-list (- l 1) (+ i 1))))))
   (define (dense-terms-list-to-sparse l)
-    (map (lambda (q p)
-	   (list p q))
-	 (length-to-list (length l) 0)
-	 l))
+    (reverse (filter (lambda (t)
+	      (not (eq? (cadr t) 0)))
+	    (map (lambda (p q)
+		   (list p q))
+		 (length-to-list (length l) 0)
+	 l))))
 	   
+
 
   (define (convert-to-sparse p)
     (let ((type-p (car p)))
@@ -811,6 +885,7 @@
 		    (cadr p)
 		    (dense-terms-list-to-sparse
 		     (cddr p))))))))
+;  (trace convert-to-sparse)
 		    
 	     
     
@@ -828,6 +903,8 @@
     (apply-generic 'sub p1 p2))
   (define (mul-poly p1 p2)
     (apply-generic 'mul p1 p2))
+  (define (div-poly p1 p2)
+    (apply-generic 'div p1 p2))
   (define (=zero? p)
     (apply-generic '=zero? p))
   (define (project p)
@@ -846,11 +923,6 @@
 	 (tag (make-dense-poly var term-list))))
   (put 'add '(polynomial polynomial)
        (lambda ( p1 p2)
-	 (display "\n")
-	 (display (convert-to-sparse p1))
-	 (display "\n")
-	 (display (convert-to-sparse p2))
-	 
 		(tag  (add-poly
 		       (convert-to-sparse p1)
 		       (convert-to-sparse p2)))))
@@ -858,6 +930,10 @@
        (lambda (p1 p2)
 	 (tag (mul-poly (convert-to-sparse p1)
 			(convert-to-sparse p2)))))
+  (put 'div '(polynomial polynomial)
+       (lambda (p1 p2)
+	 (div-poly (convert-to-sparse p1)
+			(convert-to-sparse p2))))
   (put 'equ? '(polynomial polynomial)
        (lambda (p1 p2)
 	 (equ? p1 p2)))
@@ -881,3 +957,5 @@
 (install-integer-package)
 (install-real-package)
 (install-polynomial-package)
+
+(div (make-sparse-polynomial 'x (list (list 5 1) (list 0 -1))) (make-dense-polynomial 'x (list -1 0 1)))
