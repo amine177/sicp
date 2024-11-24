@@ -43,6 +43,7 @@
 (define (sub x y) (apply-generic 'sub x y))
 (define (mul x y) (apply-generic 'mul x y))
 (define (div x y) (apply-generic 'div x y))
+(define (neg x) (apply-generic 'neg x))
 (define (make-sparse-polynomial var terms)
   ((get 'make-sparse-polynomial 'polynomial) var terms))
 (define (make-dense-polynomial var terms)
@@ -663,12 +664,16 @@
        (lambda (p)
 	 (tag p)))
   'done)
-
+; (polynomial (sparse-polynomial 'x '((100 2))))
+; 100*x^2
 (define (install-sparse-polynomial-package)
   (define (adjoin-term term term-list)
-    (if (=zero? (coeff term))
-	term-list
-	(cons term term-list)))
+    (cond ((=zero? (coeff term))
+	   (cond ((null? term-list) '((0 0)))
+		 (else term-list)))
+	   (else
+	    (cons term term-list))))
+
   (define (the-empty-termlist) '())
   (define (first-term term-list) (car term-list))
   (define (rest-terms term-list) (cdr term-list))
@@ -757,7 +762,9 @@
     (define (neg p)
       (make-poly (variable p)
 		 (map  (lambda (t)
-			 (neg-term t))
+			 (list
+			  (car t)
+			  (apply-generic 'neg (cadr t))))
 		       (term-list p))))
 
     ;; interface
@@ -841,5 +848,3 @@
 (install-integer-package)
 (install-real-package)
 (install-polynomial-package)
-
-
