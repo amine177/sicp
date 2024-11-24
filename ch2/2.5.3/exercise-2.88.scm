@@ -565,9 +565,12 @@
 
 (define (install-polynomial-package)
   (define (adjoin-term term term-list)
-    (if (=zero? (coeff term))
-	term-list
-	(cons term term-list)))
+    (cond ((=zero? (coeff term))
+	   (cond ((null? term-list) '((0 0)))
+		 (else term-list)))
+	   (else
+	    (cons term term-list))))
+  
   (define the-empty-termlist '())
   (define (first-term term-list) (car term-list))
   (define (rest-terms term-list) (cdr term-list))
@@ -651,6 +654,7 @@
 	 (lambda (p1 p2) (tag (add-poly p1 p2))))
     (put 'sub '(polynomial polynomial)
 	 (lambda (p1 p2)
+	   (display "POLY-SUB-LAMBDA\n")
 	   (tag (add-poly p1
 		     (neg p2)))))
     (put 'mul '(polynomial polynomial)
@@ -675,4 +679,6 @@
 	(list 2 0)
 	(list 0 1))))
 
-(=zero? (make-polynomial 'x (list (list 100 0))))
+;(=zero? (make-polynomial 'x (list (list 100 0))))
+(add (make-polynomial 'x (list (list 100 0)))
+     (make-polynomial 'x (list (list 100 0))))
