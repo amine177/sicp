@@ -667,9 +667,12 @@
 
 (define (install-sparse-polynomial-package)
   (define (adjoin-term term term-list)
-    (if (=zero? (coeff term))
-	term-list
-	(cons term term-list)))
+    (cond ((=zero? (coeff term))
+	   (cond ((null? term-list) '((0 0)))
+		 (else term-list)))
+	   (else
+	    (cons term term-list))))
+ 
   (define (the-empty-termlist) '())
   (define (first-term term-list) (car term-list))
   (define (rest-terms term-list) (cdr term-list))
@@ -684,7 +687,13 @@
 	  (else
 	   (let ((t1 (first-term l1))
 		 (t2 (first-term l2)))
-	     (cond ((> (order t1) (order t2))
+	     (cond ((=zero? (coeff t1))
+		    (add-terms (rest-terms l1)
+			       l2))
+		   ((=zero? (coeff t2))
+		    (add-terms l1
+			       (rest-terms l2)))
+		   ((> (order t1) (order t2))
 		    (adjoin-term t1 (add-terms (rest-terms l1)
 					       l2)))
 		   ((< (order t1) (order t2))
@@ -795,10 +804,12 @@
 	  (else
 	   (cons i (length-to-list (- l 1) (+ i 1))))))
   (define (dense-terms-list-to-sparse l)
-    (map (lambda (q p)
-	   (list p q))
+    (filter (lambda (term)
+	      (not (=zero? (cadr term))))
+	    (map (lambda (q p)
+	   (list  q p))
 	 (length-to-list (length l) 0)
-	 l))
+	 l)))
 	   
 
   (define (convert-to-sparse p)
@@ -858,6 +869,10 @@
        (lambda (p1 p2)
 	 (tag (mul-poly (convert-to-sparse p1)
 			(convert-to-sparse p2)))))
+  (put 'sub '(polynomial polynomial)
+       (lambda (p1 p2)
+	 (tag (sub-poly (convert-to-sparse p1)
+			(convert-to-sparse p2)))))
   (put 'equ? '(polynomial polynomial)
        (lambda (p1 p2)
 	 (equ? p1 p2)))
@@ -881,3 +896,4 @@
 (install-integer-package)
 (install-real-package)
 (install-polynomial-package)
+
