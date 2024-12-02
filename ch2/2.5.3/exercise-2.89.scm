@@ -664,7 +664,7 @@
        (lambda (p)
 	 (tag p)))
   'done)
-; (polynomial (sparse-polynomial 'x '((100 2))))
+; (polynomial (sparse-polynomial 'x '((2 100))))
 ; 100*x^2
 (define (install-sparse-polynomial-package)
   (define (adjoin-term term term-list)
