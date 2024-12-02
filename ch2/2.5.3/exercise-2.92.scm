@@ -219,7 +219,7 @@
   (define (numer x) (car x))
   (define (denom x) (cdr x))
   (define (make-rat n d)
-    (cond ((apply-generic 'equ? d 0)
+    (cond ((apply-generic '=zero? d)
 	   (error "null denominator: MAKE-RAT"))
 	  (else
 	   (let ((g (gcd n d)))
@@ -681,9 +681,12 @@
 
 (define (install-sparse-polynomial-package)
   (define (adjoin-term term term-list)
-    (if (=zero? (coeff term))
-	term-list
-	(cons term term-list)))
+    (cond ((=zero? (coeff term))
+	   (cond ((null? term-list) '((0 0)))
+		 (else term-list)))
+	   (else
+	    (cons term term-list))))
+  
   (define (higher-var? x y)
     (symbol<? x y))
   (define (the-empty-termlist) '())
@@ -934,12 +937,14 @@
 	  (else
 	   (cons i (length-to-list (- l 1) (+ i 1))))))
   (define (dense-terms-list-to-sparse l)
-    (reverse (filter (lambda (t)
-	      (not (eq? (cadr t) 0)))
-	    (map (lambda (p q)
-		   (list p q))
-		 (length-to-list (length l) 0)
+    ; sparse polynomials should start with the highest degree
+    (reverse (filter (lambda (term)
+	      (not (=zero? (cadr term))))
+	    (map (lambda (q p)
+	   (list  q p))
+	 (length-to-list (length l) 0)
 	 l))))
+
 	   
 
 
