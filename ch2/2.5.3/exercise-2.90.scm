@@ -804,12 +804,13 @@
 	  (else
 	   (cons i (length-to-list (- l 1) (+ i 1))))))
   (define (dense-terms-list-to-sparse l)
-    (filter (lambda (term)
+    ; sparse polynomials should start with the highest degree
+    (reverse (filter (lambda (term)
 	      (not (=zero? (cadr term))))
 	    (map (lambda (q p)
 	   (list  q p))
 	 (length-to-list (length l) 0)
-	 l)))
+	 l))))
 	   
 
   (define (convert-to-sparse p)

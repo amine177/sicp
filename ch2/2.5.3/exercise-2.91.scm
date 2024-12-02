@@ -674,9 +674,12 @@
 
 (define (install-sparse-polynomial-package)
   (define (adjoin-term term term-list)
-    (if (=zero? (coeff term))
-	term-list
-	(cons term term-list)))
+    (cond ((=zero? (coeff term))
+	   (cond ((null? term-list) '((0 0)))
+		 (else term-list)))
+	   (else
+	    (cons term term-list))))
+ 
   (define (the-empty-termlist) '())
   (define (first-term term-list) (car term-list))
   (define (rest-terms term-list) (cdr term-list))
@@ -772,7 +775,6 @@
 ;    (bkpt div-terms)
 ;    (trace div-terms)
     (define (div-poly p1 p2)
-
       (if (same-variable? (variable p1) (variable p2))
 	  (let ((result
 		 (map (lambda (t)
@@ -866,12 +868,20 @@
 	  (else
 	   (cons i (length-to-list (- l 1) (+ i 1))))))
   (define (dense-terms-list-to-sparse l)
-    (reverse (filter (lambda (t)
-	      (not (eq? (cadr t) 0)))
-	    (map (lambda (p q)
-		   (list p q))
-		 (length-to-list (length l) 0)
+    ; sparse polynomials should start with the highest degree
+    (reverse (filter (lambda (term)
+	      (not (=zero? (cadr term))))
+	    (map (lambda (q p)
+	   (list  q p))
+	 (length-to-list (length l) 0)
 	 l))))
+  ;(define (dense-terms-list-to-sparse l)
+  ;  (reverse (filter (lambda (t)
+;	      (not (eq? (cadr t) 0)))
+;	    (map (lambda (p q)
+;		   (list q p))
+;		 (length-to-list (length l) 0)
+;	 l))))
 	   
 
 
@@ -931,7 +941,13 @@
 	 (tag (mul-poly (convert-to-sparse p1)
 			(convert-to-sparse p2)))))
   (put 'div '(polynomial polynomial)
+
        (lambda (p1 p2)
+	 (display "\nPOLYNOMIAL-PACKAGE -> div")
+	 (display "\n(sparse p1): ")
+	 (display p1)
+	 (display "\n(sparse p2): ")
+	 (display (convert-to-sparse p2))
 	 (div-poly (convert-to-sparse p1)
 			(convert-to-sparse p2))))
   (put 'equ? '(polynomial polynomial)
@@ -952,10 +968,8 @@
 
 
 ; install the packages
+(install-polynomial-package)
 (install-complex-package)
 (install-rational-package)
 (install-integer-package)
 (install-real-package)
-(install-polynomial-package)
-
-(div (make-sparse-polynomial 'x (list (list 5 1) (list 0 -1))) (make-dense-polynomial 'x (list -1 0 1)))
