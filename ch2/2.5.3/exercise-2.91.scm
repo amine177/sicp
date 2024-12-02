@@ -694,7 +694,13 @@
 	  (else
 	   (let ((t1 (first-term l1))
 		 (t2 (first-term l2)))
-	     (cond ((> (order t1) (order t2))
+	     (cond ((=zero? (coeff t1))
+		    (add-terms (rest-terms l1)
+			       l2))
+		   ((=zero? (coeff t2))
+		    (add-terms l1
+			       (rest-terms l2)))
+		   ((> (order t1) (order t2))
 		    (adjoin-term t1 (add-terms (rest-terms l1)
 					       l2)))
 		   ((< (order t1) (order t2))
@@ -706,6 +712,7 @@
 			   (add (coeff t1) (coeff t2)))
 			  (add-terms (rest-terms l1)
 				     (rest-terms l2)))))))))
+
 
   (define (mul-terms l1 l2)
     (if (empty-termlist? l1)
