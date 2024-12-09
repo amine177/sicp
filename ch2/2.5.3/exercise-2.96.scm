@@ -715,7 +715,6 @@
 				(order (first-term b))) 1))))
       (cadr (div-terms (mul-term-by-all-terms (make-term 0 int-factor) a)
 		 b))))
-  
   (define (gcd-terms a b)
     (cond ((empty-termlist? b)
 	   (div-terms a (list (make-term  0 (apply gcd (map coeff a))))))
@@ -723,7 +722,7 @@
 ;	   (let ((remainder (remainder-terms a b)))
    	   (let ((remainder (pseudoremainder-terms a b)))
 	     (cond ((terms-list-equal? a remainder)
-		    (div-terms remainder (list (make-term  0 (apply gcd (map coeff remainder))))))
+		    (car (div-terms remainder (list (make-term  0 (apply gcd (map coeff remainder)))))))
 
 		       (else
 					;	(gcd-terms b (remainder-terms a b))))))))
