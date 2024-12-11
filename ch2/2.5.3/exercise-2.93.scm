@@ -526,7 +526,7 @@
 
 
 					; apply generic
-(trace apply-generic1)
+
 (define (apply-generic1 op . args)
   (let ((type-args (map type-arg args)))
 	(let ((proc (get op type-args)))
@@ -901,7 +901,7 @@
 		  (div-poly p1
 			    p2)))
 	     (let ((quotient (cadr result))
-		   (remainder (caddr result)))
+		   (remainder (cadr result)))
 	       (cons 'polynomial-fraction
 		     (list (tag quotient)
 			   (tag remainder)))))))
@@ -1013,6 +1013,9 @@
        (lambda (p) (tag p)))
   (put 'raise '(polynomial)
        (lambda (p) (tag p)))
+  (put 'make 'polynomial
+       (lambda (var term-list)
+	 (tag (make-sparse-poly var term-list))))
        
   'done)
 
@@ -1045,12 +1048,12 @@
 (mul (make-sparse-polynomial 'x (list (list 1 1))) (make-sparse-polynomial 'y (list (list 1 3))))
 
 
-(define p1 (make-sparse-polynomial 'x '((2 1) (0 1))))
+(define p1 (make-polynomial 'x '((2 1) (0 1))))
 
-(define p2 (make-sparse-polynomial 'x '((3 1) (0 1))))
+(define p2 (make-polynomial 'x '((3 1) (0 1))))
 
 (define r (make-rational p2 p1))
-(add r r)
+;(add r r)
 ;(project (div p1 p2))
 ;(trace apply-generic1)
 ;(trace apply-generic)
