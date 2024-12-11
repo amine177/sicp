@@ -43,7 +43,7 @@
 (define (sub x y) (apply-generic 'sub x y))
 (define (mul x y) (apply-generic 'mul x y))
 (define (div x y) (apply-generic 'div x y))
-(define (gcd x y) (apply-generic 'gcd x y))
+(define (gcd-generic x y) (apply-generic 'gcd x y))
 (define (make-sparse-polynomial var terms)
   ((get 'make-sparse-polynomial 'polynomial) var terms))
 (define (make-dense-polynomial var terms)
@@ -129,6 +129,8 @@
   (put 'sqrt '(integer) (lambda (x)
 			      (apply-generic 'sqrt
 					     (raise x))))
+  (put 'gcd '(integer integer) (lambda (x y)
+				 (gcd x y)))
 
   ;-- raise & project
   (put 'raise '(integer)
@@ -219,15 +221,23 @@
 (define (install-rational-package)
   (define (numer x) (car x))
   (define (denom x) (cdr x))
+  
   (define (make-rat n d)
     (cond ((apply-generic '=zero? d)
 	   (error "null denominator: MAKE-RAT"))
 	  (else
 	   (let ((g (apply-generic 'gcd n d)))
-	     (if (not (and (pair? n) (pair? d)))
-		 (cons
-		  (truncate->exact (div n g)) (truncate->exact (div d g)))
-		 (cons (apply-generic 'div n g) (apply-generic 'div d g)))))))
+	     (cond ((not (and (pair? n) (pair? d)))
+		    (cons
+		     (truncate->exact (div n g)) (truncate->exact (div d g))))
+		   (else
+		    (display "\nNumer ")
+		    (display (apply-generic 'div n g))
+		    (display "\nDenom ")
+		    (display (apply-generic 'div d g))
+		    
+				       
+		    (cons (apply-generic 'div n g) (apply-generic 'div d g))))))))
   (define (add-rat x y)
     (make-rat (add (mul (numer x) (denom y))
 		 (mul (numer y) (denom x)))
@@ -313,8 +323,18 @@
 			    (make-real-from-numer-denom
 			      (numer  x)
 			      (denom x))))
+
   (put 'project '(rational) (lambda (x)
-			      (round->exact (/ (numer x) (denom x)))))
+
+			      (cond ((or
+				      (pair? (numer x)) (pair? (denom x)))
+				     (tag x))
+				    (else
+				     (let ((fraction (div (numer x) (denom x))))
+				       (cond ((not (pair? fraction))
+					      (round->exact fraction))
+					     (else
+					      fraction)))))))
   'done)
 
 
@@ -706,25 +726,38 @@
   (define (remainder-terms a b)
     (cadr (div-terms a  b)))
   
+;  (define (gcd-terms a b)
+;    (display "\n B: ")
+;    (display b)
+;    (display "\n") 
+;    (cond ((empty-termlist? b)
+;	   a)
+;	  (else (gcd-terms b (remainder-terms a b)))))
   (define (gcd-terms a b)
     (cond ((empty-termlist? b)
 	   a)
 	  (else
+	   (display "B is not empty\n")
 	   (let ((remainder (remainder-terms a b)))
-		 (display (terms-list-equal? a remainder))
-		 (display "\n")
-		 (display (terms-list-equal? b remainder))
-			      
-		 (cond ((terms-list-equal? a remainder)
-			remainder)
+	     (display "GCD-TERMS, REMAINDER: ")
+	     (display remainder)
+	     (display "\n")
+	     (cond ((and (pair? remainder)
+			 (=zero? (order (first-term remainder))))
+		    (list (make-term 0 1)))
+		   (else
+		    (cond ((terms-list-equal? a remainder)
+		    	   (list (make-term 0 1)))
 		       (else
-			(gcd-terms b (remainder-terms a b))))))))
+			(gcd-terms b (remainder-terms a b))))))))))
+;  (trace gcd-terms)
 
   (define (gcd-polys a b)
     (cond ((not (same-variable? (variable a) (variable b)))
 	   (error "Polynomials not in the same variable"))
 	  (else (gcd-terms (term-list a)
 			   (term-list b)))))
+;  (trace gcd-polys)
 	  
   (define (add-terms l1 l2)
     (cond ((empty-termlist? l1) l2)
@@ -756,8 +789,8 @@
 	(the-empty-termlist)
 	(let ((t2 (first-term l)))
 	  (adjoin-term
-	   (make-term (+ (order t1) (order t2))
-		      (apply-generic 'mul (coeff t1) (coeff t2)))
+	   (make-term (add (order t1) (order t2))
+		      (mul (coeff t1) (coeff t2)))
 	   (mul-term-by-all-terms t1 (rest-terms l))))))
   (define (make-poly variable term-list) (cons variable term-list))
   (define (same-variable? v1 v2)
@@ -810,7 +843,11 @@
 				   (car l2))
 		     (terms-list-equal? (cdr l1)
 					(cdr l2))))))
+
   (define (div-terms l1 l2)
+    (display "\n L1 :")
+    (display l1)
+
       (if (empty-termlist? l1)
 	  (list (the-empty-termlist)
 		(the-empty-termlist))
@@ -832,7 +869,6 @@
 				  l2))
 			    
 			    )))
-
 		      (if (terms-list-equal? l1 addition-result)
 			  (list (adjoin-term (make-term
 					new-o
@@ -842,17 +878,24 @@
 		      (let ((rest-of-result
 			   (div-terms
 			    addition-result l2)))
+			(display "\n rest-of-result ")
+			(display rest-of-result)
 		      		      
 		      (list (adjoin-term (make-term
 					  new-o
 					  new-c)
 					 (car rest-of-result))
 			    (cadr rest-of-result))))))))))
+;  (trace div-terms)
+
+
+
 
     
-;    (trace div-terms)
-  (define (div-poly p1 p2)
-      (if (same-variable? (variable p1) (variable p2))
+					;    (trace div-terms)
+
+    (define (div-poly p1 p2)
+      (cond ((same-variable? (variable p1) (variable p2))
 	  (let ((result
 		 (map (lambda (t)
 			(cond ((null? t)
@@ -860,11 +903,13 @@
 			      (else
 			       (make-poly (variable p1) t))))
 		      (div-terms (term-list p1) (term-list p2)))))
-
-	    (cons 'polynomial-fraction
-		      (list (car result) (cadr result))))
-	  (error "Polynomials not in the same variable: DIV-POLY"
-		 (list p1 p2))))
+		  (list (car result)
+			(cadr result))))
+	    (else
+	     (error "Polynomials not in the same variable: DIV-POLY"
+		 (list p1 p2)))))
+   
+   (trace div-poly)
 
     (define (terms-equal? t1 t2)
       (and (apply-generic 'equ? (order t1) (order t2))
@@ -889,8 +934,9 @@
 	 (term-list p))) 0))
 
     (define (neg-term t)
+      
 
-      (list (order t)
+      (make-term (order t)
 	    (apply-generic 'neg (coeff t))))
 ;    (trace neg-term)
     (define (neg p)
@@ -916,14 +962,15 @@
 	   (let ((result
 		  (div-poly p1
 			    p2)))
-	     (let ((quotient (cadr result))
-		   (remainder (caddr result)))
+	     (let ((quotient (car result))
+		   (remainder (cadr result)))
 	       (cond ((zero? remainder)
 		      (tag quotient))
 		     (else
-		      (cons 'polynomial-fraction
-			    (list (tag quotient)
-			   (tag remainder)))))))))
+		      
+		      
+			   (cons 'polynomial-fraction (list (tag quotient)
+				  (tag remainder)))))))))
     (put 'mul '(sparse-polynomial sparse-polynomial)
 	 (lambda (p1 p2) (tag (mul-poly p1 p2))))
     (put 'mul '(sparse-polynomial integer)
@@ -935,17 +982,24 @@
     (put 'equ? '(sparse-polynomial sparse-polynomial)
 	 (lambda (p1 p2)
 	   (equ? p1 p2)))
+    (put 'equ? '(polynomial-fraction polynomial-fraction)
+	 (lambda (f1 f2)
+	   (and (apply-generic 'equ? (car f1) (car f2))
+		(apply-generic 'equ? (cadr f1) (cadr f2)))))
+		
     (put 'project '(sparse-polynomial)
 	 (lambda (x) (tag x)))
     (put '=zero? '(sparse-polynomial)
 	 (lambda (p) (zero? p)))
     (put 'raise '(sparse-polynomial)
        (lambda (p)
-	 (tag p)))
+	 p))
     (put 'gcd '(sparse-polynomial sparse-polynomial)
 	 (lambda (a b)
 
-	   (tag (cons (variable a) (gcd-polys a b)))))
+	   (tag (make-poly (variable a) (gcd-polys a b)))))
+;    (put 'project '(sparse-polynomial)
+;	 (lambda (p) p))
     'done)
 
 (define (install-polynomial-package)
@@ -998,6 +1052,7 @@
   (define (=zero? p)
     (apply-generic '=zero? p))
   (define (project p)
+    (display "PROJECT POLY")
     (apply-generic 'project p))
   (define (equ? p1 p2)
     (apply-generic 'equ? p1 p2))
@@ -1043,6 +1098,9 @@
   (put 'gcd '(polynomial polynomial)
        (lambda (a b) (tag (apply-generic 'gcd (convert-to-sparse a)
 					 (convert-to-sparse b)))))
+  (put 'make 'polynomial
+       (lambda (var term-list)
+	 (tag (make-sparse-poly var term-list))))
        
   'done)
 
@@ -1053,26 +1111,10 @@
 (install-integer-package)
 (install-real-package)
 (install-polynomial-package)
-
-(div
- (make-sparse-polynomial
-  'x
-  (list (list 5 1) (list 0 -1)))
- (make-dense-polynomial
-  'x
-  (list -1 0 1)))
-(add
- (make-sparse-polynomial 'z (list (list 1 1)))
- (add
-  (make-sparse-polynomial 'z (list (list 1 1)))
-  (add
-   (make-sparse-polynomial 'y (list (list 1 3)))
-   (add
-    (make-sparse-polynomial 'x (list (list 1 1)))
-    (make-dense-polynomial 'y (list 0 3))))))
+;(trace apply-generic)
+;(trace apply-generic1)
 
 
-(mul (make-sparse-polynomial 'x (list (list 1 1))) (make-sparse-polynomial 'y (list (list 1 3))))
 
 
 (define p1 (make-sparse-polynomial 'x '((2 1) (0 1))))
