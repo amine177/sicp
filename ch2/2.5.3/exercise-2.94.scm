@@ -230,14 +230,14 @@
     (cond ((apply-generic '=zero? d)
 	   (error "null denominator: MAKE-RAT"))
 	  (else
-	   (let ((g (apply-generic 'gcd n d)))
+	   (let ((g (gcd-generic n d)))
 	     (cond ((not (and (pair? n) (pair? d)))
 		    (cons
 		     (truncate->exact (div n g)) (truncate->exact (div d g))))
 		   (else
-		    (display "\nNumer ")
-		    (display (apply-generic 'div n g))
-		    (display "\nDenom ")
+;		    (display "\nNumer ")
+;		    (display (apply-generic 'div n g))
+;		    (display "\nDenom ")
 		    (display (apply-generic 'div d g))
 		    
 				       
@@ -741,11 +741,11 @@
     (cond ((empty-termlist? b)
 	   a)
 	  (else
-	   (display "B is not empty\n")
+;	   (display "B is not empty\n")
 	   (let ((remainder (remainder-terms a b)))
-	     (display "GCD-TERMS, REMAINDER: ")
-	     (display remainder)
-	     (display "\n")
+;	     (display "GCD-TERMS, REMAINDER: ")
+;	     (display remainder)
+;	     (display "\n")
 	     (cond ((and (pair? remainder)
 			 (=zero? (order (first-term remainder))))
 		    (list (make-term 0 1)))
@@ -849,8 +849,8 @@
 					(cdr l2))))))
 
   (define (div-terms l1 l2)
-    (display "\n L1 :")
-    (display l1)
+;    (display "\n L1 :")
+;    (display l1)
 
       (if (empty-termlist? l1)
 	  (list (the-empty-termlist)
@@ -873,9 +873,9 @@
 				  l2))
 			    
 			    )))
-		      (display "ADDITION-RESULT ")
-		      (display addition-result)
-		      (display "\n")
+;		      (display "ADDITION-RESULT ")
+;		      (display addition-result)
+;		      (display "\n")
 		      (if (terms-list-equal? l1 addition-result)
 			  (list (adjoin-term (make-term
 					new-o
@@ -885,8 +885,8 @@
 		      (let ((rest-of-result
 			   (div-terms
 			    addition-result l2)))
-			(display "\n rest-of-result ")
-			(display rest-of-result)
+;			(display "\n rest-of-result ")
+;			(display rest-of-result)
 		      		      
 		      (list (adjoin-term (make-term
 					  new-o
@@ -916,7 +916,7 @@
 	     (error "Polynomials not in the same variable: DIV-POLY"
 		 (list p1 p2)))))
    
-   (trace div-poly)
+;   (trace div-poly)
 
     (define (terms-equal? t1 t2)
       (and (apply-generic 'equ? (order t1) (order t2))
@@ -1059,7 +1059,7 @@
   (define (=zero? p)
     (apply-generic '=zero? p))
   (define (project p)
-    (display "PROJECT POLY")
+;    (display "PROJECT POLY")
     (apply-generic 'project p))
   (define (equ? p1 p2)
     (apply-generic 'equ? p1 p2))

@@ -55,6 +55,7 @@
 (define (exp x y) (apply-generic 'exp x y))
 (define (sine x) (apply-generic 'sine x))
 (define (cosine x) (apply-generic 'cosine x))
+(define (neg x) (apply-generic 'neg x))
 (define (raise x)
   (apply-generic 'raise x))
 (define (project x)
