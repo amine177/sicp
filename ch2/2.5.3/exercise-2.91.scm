@@ -938,6 +938,9 @@
   (put 'make-dense-polynomial 'polynomial
        (lambda (var term-list)
 	 (tag (make-dense-poly var term-list))))
+  (put 'make 'polynomial
+       (lambda (var term-list)
+	 (tag (make-sparse-poly var term-list))))
   (put 'add '(polynomial polynomial)
        (lambda ( p1 p2)
 		(tag  (add-poly
@@ -980,3 +983,6 @@
 (install-rational-package)
 (install-integer-package)
 (install-real-package)
+
+(define p1 (make-polynomial 'x '((2 1) (1 1) (0 1))))
+(div p1 p1)
