@@ -47,7 +47,7 @@
   (cond ((or (pair? x) (pair? y))
 	 (apply-generic 'gcd x y))
 	(else
-	 (gcd x y))))
+	 (apply gcd (list x y)))))
 (define (make-sparse-polynomial var terms)
   ((get 'make-sparse-polynomial 'polynomial) var terms))
 (define (make-dense-polynomial var terms)
@@ -227,11 +227,19 @@
     (cond ((apply-generic '=zero? d)
 	   (error "null denominator: MAKE-RAT"))
 	  (else
-	   (let ((g (apply-generic 'gcd n d)))
-	     (if (not (and (pair? n) (pair? d)))
-		 (cons
-		  (truncate->exact (div n g)) (truncate->exact (div d g)))
-		 (cons (apply-generic 'div n g) (apply-generic 'div d g)))))))
+	   (let ((g (gcd-generic n d)))
+	     (cond ((not (and (pair? n) (pair? d)))
+		    (cons
+		     (truncate->exact (div n g)) (truncate->exact (div d g))))
+		   (else
+		    (display "\nNumer ")
+		    (display (apply-generic 'div n g))
+		    (display "\nDenom ")
+		    (display (apply-generic 'div d g))
+		    
+				       
+		    (cons (apply-generic 'div n g) (apply-generic 'div d g))))))))
+  (trace make-rat)
   (define (add-rat x y)
     (make-rat (add (mul (numer x) (denom y))
 		 (mul (numer y) (denom x)))
@@ -714,19 +722,37 @@
 		      (add (sub (order (first-term a))
 				(order (first-term b))) 1))))
       (cadr (div-terms (mul-term-by-all-terms (make-term 0 int-factor) a)
-		 b))))
+		       b))))
   (define (gcd-terms a b)
     (cond ((empty-termlist? b)
-	   (div-terms a (list (make-term  0 (apply gcd (map coeff a))))))
+	   a)
 	  (else
-;	   (let ((remainder (remainder-terms a b)))
-   	   (let ((remainder (pseudoremainder-terms a b)))
-	     (cond ((terms-list-equal? a remainder)
-		    (car (div-terms remainder (list (make-term  0 (apply gcd (map coeff remainder)))))))
+	   (display "B is not empty\n")
+	   (let ((remainder (pseudoremainder-terms a b)))
+	     (display "GCD-TERMS, REMAINDER: ")
+	     (display remainder)
+	     (display "\n")
+	     (cond ((and (pair? remainder)
+			 (=zero? (order (first-term remainder))))
+		    (list (make-term 0 1)))
+		   (else
+		    (cond ((terms-list-equal? a remainder)
+			   (list (make-term 0 1)))
 
 		       (else
+			(gcd-terms b (pseudoremainder-terms a b))))))))))
+;  (define (gcd-terms a b)
+;    (cond ((empty-termlist? b)
+;	   (div-terms a (list (make-term  0 (apply gcd (map coeff a))))))
+;	  (else
+;	   (let ((remainder (remainder-terms a b)))
+;   	   (let ((remainder (pseudoremainder-terms a b)))
+;	     (cond ((terms-list-equal? a remainder)
+;		    (car (div-terms remainder (list (make-term  0 (apply gcd (map coeff remainder)))))))
+
+;		       (else
 					;	(gcd-terms b (remainder-terms a b))))))))
-			(gcd-terms b (pseudoremainder-terms a b))))))))
+;			(gcd-terms b (pseudoremainder-terms a b))))))))
 
   (define (gcd-polys a b)
     (cond ((not (same-variable? (variable a) (variable b)))
@@ -819,6 +845,9 @@
 		     (terms-list-equal? (cdr l1)
 					(cdr l2))))))
   (define (div-terms l1 l2)
+    (display "\n L1 :")
+    (display l1)
+
       (if (empty-termlist? l1)
 	  (list (the-empty-termlist)
 		(the-empty-termlist))
@@ -840,7 +869,9 @@
 				  l2))
 			    
 			    )))
-
+		      (display "ADDITION-RESULT ")
+		      (display addition-result)
+		      (display "\n")
 		      (if (terms-list-equal? l1 addition-result)
 			  (list (adjoin-term (make-term
 					new-o
@@ -850,17 +881,16 @@
 		      (let ((rest-of-result
 			   (div-terms
 			    addition-result l2)))
+			(display "\n rest-of-result ")
+			(display rest-of-result)
 		      		      
 		      (list (adjoin-term (make-term
 					  new-o
 					  new-c)
 					 (car rest-of-result))
 			    (cadr rest-of-result))))))))))
-
-    
-;    (trace div-terms)
   (define (div-poly p1 p2)
-      (if (same-variable? (variable p1) (variable p2))
+      (cond ((same-variable? (variable p1) (variable p2))
 	  (let ((result
 		 (map (lambda (t)
 			(cond ((null? t)
@@ -868,12 +898,12 @@
 			      (else
 			       (make-poly (variable p1) t))))
 		      (div-terms (term-list p1) (term-list p2)))))
-
-	    (cons 'polynomial-fraction
-		      (list (car result) (cadr result))))
-	  (error "Polynomials not in the same variable: DIV-POLY"
-		 (list p1 p2))))
-
+		  (list (car result)
+			(cadr result))))
+	    (else
+	     (error "Polynomials not in the same variable: DIV-POLY"
+		 (list p1 p2)))))
+    
     (define (terms-equal? t1 t2)
       (and (apply-generic 'equ? (order t1) (order t2))
 	   (apply-generic 'equ? (coeff t1) (coeff t2))))
@@ -924,8 +954,8 @@
 	   (let ((result
 		  (div-poly p1
 			    p2)))
-	     (let ((quotient (cadr result))
-		   (remainder (caddr result)))
+	     (let ((quotient (car result))
+		   (remainder (cadr result)))
 	       (cond ((zero? remainder)
 		      (tag quotient))
 		     (else
@@ -949,7 +979,7 @@
 	 (lambda (p) (zero? p)))
     (put 'raise '(sparse-polynomial)
        (lambda (p)
-	 (tag p)))
+	  p))
     (put 'gcd '(sparse-polynomial sparse-polynomial)
 	 (lambda (a b)
 
@@ -1082,3 +1112,5 @@
 (display "(GCD Q1 Q2): ")
 (display (gcd-generic q1 q2))
 (display "\n")
+(trace apply-generic)
+(trace apply-generic1)
