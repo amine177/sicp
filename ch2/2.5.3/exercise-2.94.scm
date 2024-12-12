@@ -43,7 +43,11 @@
 (define (sub x y) (apply-generic 'sub x y))
 (define (mul x y) (apply-generic 'mul x y))
 (define (div x y) (apply-generic 'div x y))
-(define (gcd-generic x y) (apply-generic 'gcd x y))
+(define (gcd-generic x y)
+  (cond ((or (pair? x) (pair? y))
+	 (apply-generic 'gcd x y))
+	(else
+	 (apply gcd (list x y)))))
 (define (make-sparse-polynomial var terms)
   ((get 'make-sparse-polynomial 'polynomial) var terms))
 (define (make-dense-polynomial var terms)
@@ -869,6 +873,9 @@
 				  l2))
 			    
 			    )))
+		      (display "ADDITION-RESULT ")
+		      (display addition-result)
+		      (display "\n")
 		      (if (terms-list-equal? l1 addition-result)
 			  (list (adjoin-term (make-term
 					new-o
