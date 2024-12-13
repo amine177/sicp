@@ -229,7 +229,7 @@
 	   (let ((g (apply-generic 'gcd n d)))
 	     (cond ((not (and (pair? n) (pair? d)))
 		    (cons
-		     (truncate->exact (div n g)) (truncate->exact (div d g))))
+		     (truncate->exact (/ n g)) (truncate->exact (/ d g))))
 		   (else
 		    (display "\nNumer ")
 		    (display (apply-generic 'div n g))

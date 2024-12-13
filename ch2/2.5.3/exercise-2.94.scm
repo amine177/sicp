@@ -202,6 +202,9 @@
 			   (tag (* x y))))
   (put 'exp '(real real) (lambda (x y)
 			   (tag (expt x y))))
+  (put '=zero? '(real)
+       (lambda (r)
+	 (= r 0)))
   (put
    'make-real-from-numer-denom
    'real
@@ -215,9 +218,13 @@
   (put 'project '(real) (lambda (x)
 			  (let ((dec-l (get-decimal-length x)))
 			    (let ((dec-denom-rs (apply-generic 'exp 10 dec-l)))
+			      (display "\nDEC-DENOM-RS")
+			      (display dec-denom-rs)
+			      (display "\n")
 			    (make-rational
 			     (truncate (* x dec-denom-rs))
 			     dec-denom-rs)))))
+
   'done)
     
     
@@ -227,13 +234,25 @@
   (define (denom x) (cdr x))
   
   (define (make-rat n d)
-    (cond ((apply-generic '=zero? d)
+    (display "\nNN: ")
+    (display n)
+    (display "\nDD:  ")
+    (display d)
+    (cond ((=zero? d)
 	   (error "null denominator: MAKE-RAT"))
 	  (else
 	   (let ((g (gcd-generic n d)))
+	     (display "\nG: ")
+	     (display g)
+	     (display "\n")
+			      
 	     (cond ((not (and (pair? n) (pair? d)))
+		    (display "\nNOTTTT PAIR\n")
+		    (display (cons
+			      (truncate->exact (/ n g)) (truncate->exact (/ d g))))
+		    (display "\n")
 		    (cons
-		     (truncate->exact (div n g)) (truncate->exact (div d g))))
+		     (truncate->exact (/ n g)) (truncate->exact (/ d g))))
 		   (else
 ;		    (display "\nNumer ")
 ;		    (display (apply-generic 'div n g))
@@ -523,6 +542,8 @@
 (define (get-highest-type types)
   (fold-right max 'nil types))
 
+
+
 (define (raise-var-to-type var type)
 
   
@@ -594,6 +615,8 @@
 				(error
 				 "No method for these types: APPLY-GENERIC"
 				 (list op type-args) )))))))))))
+
+
    
 (define (apply-generic op . args)
   (cond ((member op (list 'add 'mul 'div 'sub  ))

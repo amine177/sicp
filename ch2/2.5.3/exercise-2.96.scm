@@ -224,13 +224,19 @@
   (define (numer x) (car x))
   (define (denom x) (cdr x))
   (define (make-rat n d)
-    (cond ((apply-generic '=zero? d)
+    (display "MAKE-RAT ")
+    (display "\n Numer ")
+    (display n)
+    (display "\n Denom ")
+    (display d)
+    
+    (cond ((=zero? d)
 	   (error "null denominator: MAKE-RAT"))
 	  (else
 	   (let ((g (gcd-generic n d)))
 	     (cond ((not (and (pair? n) (pair? d)))
 		    (cons
-		     (truncate->exact (div n g)) (truncate->exact (div d g))))
+		     (truncate->exact (/ n g)) (truncate->exact (/ d g))))
 		   (else
 		    (display "\nNumer ")
 		    (display (apply-generic 'div n g))
@@ -239,7 +245,7 @@
 		    
 				       
 		    (cons (apply-generic 'div n g) (apply-generic 'div d g))))))))
-  (trace make-rat)
+  ;(trace make-rat)
   (define (add-rat x y)
     (make-rat (add (mul (numer x) (denom y))
 		 (mul (numer y) (denom x)))
@@ -325,8 +331,18 @@
 			    (make-real-from-numer-denom
 			      (numer  x)
 			      (denom x))))
+
   (put 'project '(rational) (lambda (x)
-			      (round->exact (/ (numer x) (denom x)))))
+
+			      (cond ((or
+				      (pair? (numer x)) (pair? (denom x)))
+				     (tag x))
+				    (else
+				     (let ((fraction (div (numer x) (denom x))))
+				       (cond ((not (pair? fraction))
+					      (round->exact fraction))
+					     (else
+					      fraction)))))))
   'done)
 
 
@@ -727,11 +743,11 @@
     (cond ((empty-termlist? b)
 	   a)
 	  (else
-	   (display "B is not empty\n")
+;	   (display "B is not empty\n")
 	   (let ((remainder (pseudoremainder-terms a b)))
-	     (display "GCD-TERMS, REMAINDER: ")
-	     (display remainder)
-	     (display "\n")
+;	     (display "GCD-TERMS, REMAINDER: ")
+;	     (display remainder)
+;	     (display "\n")
 	     (cond ((and (pair? remainder)
 			 (=zero? (order (first-term remainder))))
 		    (list (make-term 0 1)))
@@ -790,8 +806,8 @@
 	(the-empty-termlist)
 	(let ((t2 (first-term l)))
 	  (adjoin-term
-	   (make-term (+ (order t1) (order t2))
-		      (apply-generic 'mul (coeff t1) (coeff t2)))
+	   (make-term (add (order t1) (order t2))
+		      (mul (coeff t1) (coeff t2)))
 	   (mul-term-by-all-terms t1 (rest-terms l))))))
   (define (make-poly variable term-list) (cons variable term-list))
   (define (same-variable? v1 v2)
@@ -845,8 +861,8 @@
 		     (terms-list-equal? (cdr l1)
 					(cdr l2))))))
   (define (div-terms l1 l2)
-    (display "\n L1 :")
-    (display l1)
+;    (display "\n L1 :")
+;    (display l1)
 
       (if (empty-termlist? l1)
 	  (list (the-empty-termlist)
@@ -869,9 +885,9 @@
 				  l2))
 			    
 			    )))
-		      (display "ADDITION-RESULT ")
-		      (display addition-result)
-		      (display "\n")
+;		      (display "ADDITION-RESULT ")
+;		      (display addition-result)
+;		      (display "\n")
 		      (if (terms-list-equal? l1 addition-result)
 			  (list (adjoin-term (make-term
 					new-o
@@ -881,8 +897,8 @@
 		      (let ((rest-of-result
 			   (div-terms
 			    addition-result l2)))
-			(display "\n rest-of-result ")
-			(display rest-of-result)
+			;(display "\n rest-of-result ")
+;			(display rest-of-result)
 		      		      
 		      (list (adjoin-term (make-term
 					  new-o
@@ -928,7 +944,7 @@
 
     (define (neg-term t)
 
-      (list (order t)
+      (make-term (order t)
 	    (apply-generic 'neg (coeff t))))
 ;    (trace neg-term)
     (define (neg p)
@@ -956,12 +972,36 @@
 			    p2)))
 	     (let ((quotient (car result))
 		   (remainder (cadr result)))
+	       (display "\nDIV SPARSE & SPARSE : ")
+	       (display "\n P1 : ")
+	       (display p1)
+	       (display "\n P2 : ")
+	       (display p2)
+	       (display "\n Quotient: ")
+	       (display quotient)
+	       (display "\n Remainder: ")
+	       (display remainder)
+	       (display "\n")
 	       (cond ((zero? remainder)
 		      (tag quotient))
 		     (else
-		      (cons 'polynomial-fraction
-			    (list (tag quotient)
-			   (tag remainder)))))))))
+		      
+		      
+			   (cons 'polynomial-fraction (list (tag quotient)
+				  (tag remainder)))))))))
+;    (put 'div '(sparse-polynomial sparse-polynomial)
+;	 (lambda (p1 p2)
+;	   (let ((result
+;		  (div-poly p1
+;			    p2)))
+;	     (let ((quotient (car result))
+;		   (remainder (cadr result)))
+;	       (cond ((zero? remainder)
+;		      (tag quotient))
+;		     (else
+;		      
+;			    (list (tag quotient)
+;			   (tag remainder))))))))
     (put 'mul '(sparse-polynomial sparse-polynomial)
 	 (lambda (p1 p2) (tag (mul-poly p1 p2))))
     (put 'mul '(sparse-polynomial integer)
@@ -973,6 +1013,10 @@
     (put 'equ? '(sparse-polynomial sparse-polynomial)
 	 (lambda (p1 p2)
 	   (equ? p1 p2)))
+    (put 'equ? '(polynomial-fraction polynomial-fraction)
+	 (lambda (f1 f2)
+	   (and (apply-generic 'equ? (car f1) (car f2))
+		(apply-generic 'equ? (cadr f1) (cadr f2)))))
     (put 'project '(sparse-polynomial)
 	 (lambda (x) (tag x)))
     (put '=zero? '(sparse-polynomial)
