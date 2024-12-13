@@ -773,8 +773,12 @@
   (define (gcd-polys a b)
     (cond ((not (same-variable? (variable a) (variable b)))
 	   (error "Polynomials not in the same variable"))
-	  (else (gcd-terms (term-list a)
-			   (term-list b)))))
+	  (else (let ((result (gcd-terms (term-list a)
+					(term-list b))))
+		  (let ((gcd-coeff (apply gcd (map coeff result))))
+		    (map (lambda (term)
+			   (make-term (order term)
+				      (div (coeff term) gcd-coeff))) result))))))
 	  
   (define (add-terms l1 l2)
     (cond ((empty-termlist? l1) l2)
@@ -1155,6 +1159,3 @@
 
 (display "(GCD Q1 Q2): ")
 (display (gcd-generic q1 q2))
-(display "\n")
-(trace apply-generic)
-(trace apply-generic1)
